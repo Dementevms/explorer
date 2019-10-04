@@ -2,17 +2,28 @@
   <div class="explorer">
     <div class="explorer__search">
       <div class="explorer__search-input">
-        <input placeholder="Input text" type="text" class="input">
+        <input 
+          placeholder="Input text" 
+          type="text" 
+          class="input"
+          v-model="input"
+        >
       </div>
       <div class="explorer__search-btn">
-        <div class="btn">Search</div>
+        <div 
+          class="btn"
+          @click="search"
+        >Search</div>
       </div>
     </div>
     <div class="explorer__columns">
       <div class="explorer__column-left">
-        <Tree v-if="items" :title="title" :items="items" />
+        <Tree 
+          v-if="items" 
+          :items="items" 
+        />
       </div>
-      <div class="explorer__column-right"></div>
+      <div class="explorer__column-right">{{ content }}</div>
     </div>
   </div>
 </template>
@@ -29,13 +40,30 @@ export default {
     return {
       title: null,
       items: null,
-      search: null
+      input: null
     };
   },
   mounted() {
     this.items = tempData;
+    this.router();
+  },
+  computed:{
+    content(){
+      return this.$store.state.content;
+    }
   },
   methods: {
+
+    search(){
+      console.log('search', this.input);
+      console.log('this.items', this.items);
+      this.action("open", false);
+      this.action("hide", true);
+      const filter = this.filter(this.items, this.input);
+      this.$router.push(filter.path);
+      console.log('filter', filter);
+    },
+
     router() {
       const path = this.$router.history.current.path;
       this.action("open", true, path);
@@ -91,22 +119,28 @@ export default {
     },
 
     filter(items, str) {
-      let match = false;
+      const result = {
+        match: false,
+        path: '/'
+      }
       items.forEach(item => {
         if (item.title === str) {
-          match = true;
+          result.match = true;
+          result.path += item.title;
           item.open = true;
           item.hide = false;
         }
         if (item.type === "folder" && item.content) {
-          if (this.filter(item.content, str)) {
-            match = true;
+          const _result = this.filter(item.content, str);
+          if (_result.match) {
+            result.match = true;
+            result.path += item.title +_result.path;
             item.open = true;
             item.hide = false;
           }
         }
       });
-      return match;
+      return result;
     }
   }
 };

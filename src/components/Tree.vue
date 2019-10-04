@@ -1,13 +1,5 @@
 <template>
   <div class="tree">
-    <div v-if="title" class="tree__item">
-      <div class="folder">
-        <div class="tree__wrapper">
-          <i class="material-icons">folder_open</i>
-          <span class="title">{{ title }}</span>
-        </div>
-      </div>
-    </div>
     <TreeItem :items="items" />
   </div>
 </template>
@@ -16,7 +8,6 @@ import TreeItem from "@/components/TreeItem.vue";
 export default {
   name: "Tree",
   props: {
-    title: String,
     items: Array
   },
   components: {
@@ -25,22 +16,22 @@ export default {
   data() {
     return {};
   },
-  mounted() {
-  }
+  mounted() {}
 };
 </script>
 <style lang="scss">
 .tree {
   margin: 0 0 0 -15px;
-  &__item {
 
+  &__item {
   }
-  &__wrapper{
+
+  &__wrapper {
     display: flex;
     align-items: center;
     margin: 0 0 5px;
-    
-    svg{
+
+    svg {
       width: 20px;
       height: 20px;
     }
@@ -52,12 +43,18 @@ export default {
       line-height: 20px;
       color: var(--light-grey-color);
     }
+
+    &.hide{
+      display: none;
+    }
   }
-}
-.folder {
-  margin: 0 0 0 15px;
-}
-.file {
-  margin: 0 0 0 15px;
+
+  &__folder {
+    margin: 0 0 0 15px;
+  }
+
+  &__file {
+    margin: 0 0 0 15px;
+  }
 }
 </style>

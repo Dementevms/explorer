@@ -8,7 +8,7 @@ export default [
       {
         title: "Folder-1-1",
         type: "folder",
-        open: false,
+        open: true,
         hide: false,
         content: [
           {
@@ -19,6 +19,13 @@ export default [
             content: "String content 1-1-1"
           }
         ]
+      },
+      {
+        title: "Folder-1-2",
+        type: "folder",
+        open: true,
+        hide: false,
+        content: []
       },
       {
         title: "File-1-1",
