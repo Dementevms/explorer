@@ -44,7 +44,7 @@ export default {
       color: var(--light-grey-color);
     }
 
-    &.hide{
+    &.hide {
       display: none;
     }
   }
