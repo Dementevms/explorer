@@ -23,9 +23,6 @@ export default {
 .tree {
   margin: 0 0 0 -15px;
 
-  &__item {
-  }
-
   &__wrapper {
     display: flex;
     align-items: center;

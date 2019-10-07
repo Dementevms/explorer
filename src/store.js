@@ -11,11 +11,11 @@ export default new Vuex.Store({
       state: {
         items: null,
         content: null,
-        route: null
+        route: "/"
       },
       mutations: {
         toogleItem(state, item) {
-          if (item.type === 'folder') {
+          if (item.type === "folder") {
             state.content = item.title;
           } else {
             state.content = item.content;
@@ -24,12 +24,22 @@ export default new Vuex.Store({
           state.route = explorer.route(state.items, item.title);
         },
         search(state, str) {
+          state.content = null;
           explorer.clear(state.items);
           state.route = explorer.search(state.items, str);
         },
         router(state, path) {
+          state.content = null;
           explorer.clear(state.items);
           explorer.router(state.items, path);
+        },
+        root(state) {
+          state.content = null;
+          explorer.root(state.items);
+        },
+        clear(state) {
+          state.content = null;
+          explorer.clear(state.items);
         }
       },
       actions: {
@@ -41,6 +51,12 @@ export default new Vuex.Store({
         },
         router({ commit }, path) {
           commit("router", path);
+        },
+        root({ commit }) {
+          commit("root");
+        },
+        clear({ commit }) {
+          commit("clear");
         }
       }
     }
