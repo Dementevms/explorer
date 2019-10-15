@@ -1,10 +1,17 @@
 export default class Explorer {
+  content(item) {
+    if (item) {
+      if (Array.isArray(item.content)) {
+        return item.title;
+      }
+      return item.content;
+    }
+    return null;
+  }
   root(items) {
-    const callback = item => {
-      item.open = true;
+    items.forEach(item => {
       item.hide = false;
-    };
-    this.executeAll(items, callback);
+    });
   }
   clear(items) {
     const callback = item => {
@@ -15,61 +22,86 @@ export default class Explorer {
   }
   toogle(item) {
     item.open = !item.open;
-    if (item.type === "folder" && item.content) {
+    if (Array.isArray(item.content) && item.content.length > 0) {
       item.content.forEach(_item => {
         _item.hide = !item.open;
       });
     }
   }
-  route(items, title) {
-    const result = this.execute(items, title);
-    return result.path + title;
+  route(items, item) {
+    const compare = (title, level, callback, item, result) => {
+      if (item.level === level && item.title === title) {
+        result.match = true;
+        result.data = item;
+        callback ? callback(item, result) : null;
+      }
+    };
+    const result = this.execute(items, item.title, item.level, compare);
+    return result.path + item.title;
   }
   router(items, path) {
     const array = path.split("/");
-    if (!array[array.length - 1]) {
+    array.shift();
+    const level = array.length - 1;
+    if (!array[level]) {
       array.pop();
     }
-    const title = array[array.length - 1];
-    const callback = item => {
-      item.open = true;
-      item.hide = false;
-      if (item.type === "folder" && item.content) {
-        item.content.forEach(item => {
-          item.hide = false;
-        });
-      }
-    };
-    this.execute(items, title, callback);
-  }
-  search(items, title) {
-    const callback = item => {
-      item.open = true;
-      item.hide = false;
-      if (item.title === title && item.type === "folder" && item.content) {
-        item.content.forEach(item => {
-          item.hide = false;
-        });
-      }
-    };
-    const result = this.execute(items, title, callback);
-    return result.path + title;
-  }
-
-  execute(items, title, callback) {
-    const result = {
-      match: false,
-      path: "/"
-    };
-    items.forEach(item => {
-      if (item.title === title) {
+    const title = array[level];
+    const compare = (title, level, callback, item, result) => {
+      if (item.level === level && item.title === title) {
         result.match = true;
+        result.data = item;
         callback ? callback(item, result) : null;
       }
-      if (item.type === "folder" && item.content) {
-        const _result = this.execute(item.content, title, callback);
+    };
+    const callback = item => {
+      item.open = true;
+      item.hide = false;
+      if (Array.isArray(item.content)) {
+        item.content.forEach(item => {
+          item.hide = false;
+        });
+      }
+    };
+    const result = this.execute(items, title, level, compare, callback);
+    this.root(items);
+    return result.data;
+  }
+  search(items, str) {
+    const regEx = new RegExp(str, "gi");
+    const compare = (title, level, callback, item, result) => {
+      if (item.title.match(regEx)) {
+        result.match = true;
+        result.data = item;
+        callback ? callback(item, result) : null;
+      }
+    };
+    const callback = _item => {
+      _item.open = true;
+      _item.hide = false;
+    };
+    this.execute(items, null, null, compare, callback);
+  }
+
+  execute(items, title, level, compare, callback) {
+    const result = {
+      match: false,
+      path: "/",
+      data: null
+    };
+    items.forEach(item => {
+      compare(title, level, callback, item, result);
+      if (Array.isArray(item.content)) {
+        const _result = this.execute(
+          item.content,
+          title,
+          level,
+          compare,
+          callback
+        );
         if (_result.match) {
           result.match = true;
+          result.data = _result.data;
           result.path += item.title + _result.path;
           callback ? callback(item, _result) : null;
         }
@@ -81,7 +113,7 @@ export default class Explorer {
   executeAll(items, callback) {
     items.forEach(item => {
       callback(item);
-      if (item.type === "folder" && item.content) {
+      if (Array.isArray(item.content)) {
         this.executeAll(item.content, callback);
       }
     });

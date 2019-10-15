@@ -33,13 +33,12 @@ export default {
   },
   data() {
     return {
-      input: null,
-      route: null
+      input: null
     };
   },
   mounted() {
     this.$store.state.explorer.items = tempData;
-    this.router();
+    this.update();
   },
   computed: {
     items() {
@@ -47,20 +46,34 @@ export default {
     },
     content() {
       return this.$store.state.explorer.content;
+    },
+    route(){
+      return this.$store.state.explorer.route;
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      this.update();
+    },
+    'route' (value) {
+      console.log('value', value);
     }
   },
   methods: {
+    update(){
+      this.input = this.$router.history.current.query.search;
+      if(this.input){
+        this.search();
+      } else {
+        this.router();
+      }
+    },
     router() {
       const path = this.$router.history.current.path;
       this.$store.dispatch("explorer/router", path);
     },
     search() {
       this.$store.dispatch("explorer/search", this.input);
-      if (
-        this.$router.history.current.path !== this.$store.state.explorer.route
-      ) {
-        this.$router.push(this.$store.state.explorer.route);
-      }
     }
   }
 };

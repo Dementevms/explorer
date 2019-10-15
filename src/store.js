@@ -14,24 +14,22 @@ export default new Vuex.Store({
         route: "/"
       },
       mutations: {
-        toogleItem(state, item) {
-          if (item.type === "folder") {
-            state.content = item.title;
-          } else {
-            state.content = item.content;
-          }
+        toogle(state, item) {
           explorer.toogle(item);
-          state.route = explorer.route(state.items, item.title);
+          explorer.content(item);
+          state.route = explorer.route(state.items, item);
         },
         search(state, str) {
           state.content = null;
           explorer.clear(state.items);
-          state.route = explorer.search(state.items, str);
+          explorer.search(state.items, str);
+          state.route = `/?search=${str}`;
         },
         router(state, path) {
           state.content = null;
           explorer.clear(state.items);
-          explorer.router(state.items, path);
+          const content = explorer.router(state.items, path);
+          state.content = explorer.content(content);
         },
         root(state) {
           state.content = null;
@@ -43,8 +41,8 @@ export default new Vuex.Store({
         }
       },
       actions: {
-        toogleItem({ commit }, item) {
-          commit("toogleItem", item);
+        toogle({ commit }, item) {
+          commit("toogle", item);
         },
         search({ commit }, str) {
           commit("search", str);
