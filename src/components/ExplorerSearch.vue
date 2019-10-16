@@ -1,28 +1,42 @@
 <template>
-  <div class="hello">
-    <input v-model="input" type="text" class="input" />
+  <div class="explorer-search">
+    <input
+      type="text"
+      class="input"
+      v-model="input"
+      v-on:keyup.enter="search"
+      @change="clear"
+    />
     <div class="btn" @click="search">Search</div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "ExplorerSearch",
   data() {
     return {
       input: null
     };
   },
+  mounted(){
+    this.$explorer.search();
+  },
   methods: {
     search() {
-      this.$store.dispatch("explorer/search", this.input);
+      this.$explorer.search(this.input);
+    },
+    clear(){
+      if(!this.input){
+        this.$explorer.clear();
+      }
     }
   }
 };
 </script>
 
 <style lang="scss">
-.hello {
+.explorer-search {
   display: flex;
   align-items: center;
   box-sizing: border-box;

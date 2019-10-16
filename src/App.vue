@@ -1,20 +1,17 @@
 <template>
   <div id="app" class="them_light">
     <Explorer />
-    <HelloWorld />
-    <MyComponent />
+    <ExplorerSearch />
   </div>
 </template>
 
 <script>
 import Explorer from "@/components/Explorer.vue";
-import HelloWorld from "@/components/HelloWorld.vue";
-import MyComponent from "@/components/MyComponent.vue";
+import ExplorerSearch from "@/components/ExplorerSearch.vue";
 export default {
   components: {
     Explorer,
-    HelloWorld,
-    MyComponent
+    ExplorerSearch,
   }
 };
 </script>

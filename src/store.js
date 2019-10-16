@@ -11,33 +11,22 @@ export default new Vuex.Store({
       state: {
         items: null,
         content: null,
-        route: "/"
+        path: "/"
       },
       mutations: {
         toogle(state, item) {
-          explorer.toogle(item);
-          explorer.content(item);
-          state.route = explorer.route(state.items, item);
+          item.open = !item.open;
+          state.content = explorer.getContent(item);
+          state.path = explorer.getPath(state.items, item);
         },
         search(state, str) {
-          state.content = null;
-          explorer.clear(state.items);
-          explorer.search(state.items, str);
-          state.route = `/?search=${str}`;
+          const item = explorer.onSearch(state.items, str);
+          state.content = explorer.getContent(item);
+          state.path = `/?search=${str}`;
         },
         router(state, path) {
-          state.content = null;
-          explorer.clear(state.items);
-          const content = explorer.router(state.items, path);
-          state.content = explorer.content(content);
-        },
-        root(state) {
-          state.content = null;
-          explorer.root(state.items);
-        },
-        clear(state) {
-          state.content = null;
-          explorer.clear(state.items);
+          const item = explorer.onRouter(state.items, path);
+          state.content = explorer.getContent(item);
         }
       },
       actions: {
@@ -49,12 +38,6 @@ export default new Vuex.Store({
         },
         router({ commit }, path) {
           commit("router", path);
-        },
-        root({ commit }) {
-          commit("root");
-        },
-        clear({ commit }) {
-          commit("clear");
         }
       }
     }

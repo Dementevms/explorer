@@ -8,6 +8,7 @@
           class="input"
           v-model="input"
           v-on:keyup.enter="search"
+          @change="clear"
         />
       </div>
       <div class="explorer__search-btn">
@@ -16,7 +17,11 @@
     </div>
     <div class="explorer__columns">
       <div class="explorer__column-left">
-        <Tree v-if="items" :items="items" />
+        <Branch 
+          v-if="items"
+          :items="items"
+          class="explorer__branch"
+        />
       </div>
       <div class="explorer__column-right">{{ content }}</div>
     </div>
@@ -25,11 +30,11 @@
 
 <script>
 import tempData from "@/assets/tempData";
-import Tree from "@/components/Tree.vue";
+import Branch from "@/components/Branch.vue";
 export default {
   name: "Explorer",
   components: {
-    Tree
+    Branch
   },
   data() {
     return {
@@ -38,7 +43,7 @@ export default {
   },
   mounted() {
     this.$store.state.explorer.items = tempData;
-    this.update();
+    this.update()
   },
   computed: {
     items() {
@@ -49,14 +54,6 @@ export default {
     },
     route(){
       return this.$store.state.explorer.route;
-    }
-  },
-  watch: {
-    '$route' (to, from) {
-      this.update();
-    },
-    'route' (value) {
-      console.log('value', value);
     }
   },
   methods: {
@@ -73,7 +70,12 @@ export default {
       this.$store.dispatch("explorer/router", path);
     },
     search() {
-      this.$store.dispatch("explorer/search", this.input);
+      this.$explorer.search(this.input);
+    },
+    clear(){
+      if(!this.input){
+        this.$explorer.clear();
+      }
     }
   }
 };
@@ -113,6 +115,10 @@ export default {
     padding: 15px;
     width: 50%;
     height: calc(100vh - 113px);
+  }
+
+  &__branch{
+    margin: 0;
   }
 }
 </style>
